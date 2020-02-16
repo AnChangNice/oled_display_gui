@@ -24,6 +24,7 @@
 > I wrote an environment setup script in \python_gui\tools\environment_setup.py,
 		which could help you install modules below,
 		but you must first install python 3.x to run this script.
+		
 > 我写了一个环境建立的脚本在：\python_gui\tools\environment_setup.py,
 		它可以帮助你安装下面的模块，
 		但是首先你得安装Python 3.x来运行这个脚本
