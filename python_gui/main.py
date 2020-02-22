@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication
 
-from window.main_window import MainWindow
+from window.main_Window import MainWindow
 
 if __name__ == '__main__':
 

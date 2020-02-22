@@ -1,6 +1,7 @@
 import serial
 import serial.tools.list_ports
 
+
 class SerialPort(object):
 
     def __init__(self, port, baudrate):
@@ -29,6 +30,7 @@ class SerialPort(object):
 
     def send(self, data):
         self.serial.write(data)
+
 
 if __name__ == '__main__':
     portList = SerialPort.getDeviceList()
