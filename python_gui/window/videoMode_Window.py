@@ -82,7 +82,7 @@ class VideoModeWindow(object):
         print(tab_name)
         if tab_name == 'Video':
             self.image_translator.output_clean()
-            self.image_translator.install_complete_callback(self.image_process_complete)
+            self.image_translator.install_complete_callback(self.image_translate_complete)
 
     def setPreviewSliderAndSpinboxEnable(self, enable):
         self.main_ui.horizontalSlider_videoPreviewFrameOffset.setEnabled(enable)
@@ -227,7 +227,7 @@ class VideoModeWindow(object):
         if index >= self.video_frames-1:
             self.videoSendStateUpdate()
 
-    def image_process_complete(self, images_queue):
+    def image_translate_complete(self, images_queue):
         count = images_queue.qsize()
         for i in range(count):
             self.images = images_queue.get()

@@ -87,7 +87,7 @@ class ScreenModeWindow(object):
         print(tab_name)
         if tab_name == 'Screen':
             self.image_translator.output_clean()
-            self.image_translator.install_complete_callback(self.image_process_complete)
+            self.image_translator.install_complete_callback(self.image_translate_complete)
 
     def setScreenWidgetEnable(self, enable):
         self.main_ui.spinBox_screenBWThreshold.setEnabled(enable)
@@ -196,7 +196,7 @@ class ScreenModeWindow(object):
         image_pix = OpenCVImage2QPixMap(image)
         self.main_ui.label_screenPreviewOutputBW.setPixmap(QPixmap.fromImage(image_pix))
 
-    def image_process_complete(self, images_queue):
+    def image_translate_complete(self, images_queue):
         count = images_queue.qsize()
         for i in range(count):
             self.images = images_queue.get()

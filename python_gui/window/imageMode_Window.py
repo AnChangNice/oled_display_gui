@@ -80,7 +80,7 @@ class ImageModeWindow(object):
         tab_name = self.main_ui.tabWidget.tabText(index)
         if tab_name == 'Image':
             self.image_translator.output_clean()
-            self.image_translator.install_complete_callback(self.image_process_complete)
+            self.image_translator.install_complete_callback(self.image_translate_complete)
 
     def setImageWidgetEnable(self, enable):
         self.main_ui.radioButton_previewRaw.setEnabled(enable)
@@ -204,7 +204,7 @@ class ImageModeWindow(object):
     def addSendMethod(self, sendMethod):
         self.sendMethod = sendMethod
 
-    def image_process_complete(self, images_queue):
+    def image_translate_complete(self, images_queue):
         count = images_queue.qsize()
         for i in range(count):
             self.images = images_queue.get()
