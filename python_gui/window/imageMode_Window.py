@@ -6,7 +6,6 @@ from os import path
 import cv2 as cv
 import numpy as np
 from image_processing.Qt2CV import OpenCVImage2QPixMap
-from image_processing.image_to_oled import re_sample
 from UI.image_export_ui import Ui_imageExportWindow
 from image_processing.image_translate import ImageTranslate, OutputImagesStructure
 
@@ -16,16 +15,17 @@ class ImageModeWindow(object):
         self.main_ui = main_ui
         self.window = window
 
-        # init signal and slot
-        self.init_signal()
-
         # export window
         self.export_window = QWidget()
         self.init_export_window(self.export_window)
 
+        # init image translator
         self.image_translator = ImageTranslate()
         self.image_translator.start()
         self.images = OutputImagesStructure()
+
+        # init signal and slot
+        self.init_signal()
 
         self.sendMethod = None
 
@@ -36,7 +36,7 @@ class ImageModeWindow(object):
 
     def init_signal(self):
         # connect signal and slot
-        # table widget
+        # tab widget
         self.main_ui.tabWidget.currentChanged.connect(self.tab_changed)
         # Threshold value
         self.main_ui.spinBox_BWThreshold.valueChanged['int'].connect(self.main_ui.horizontalSlider_BWThreshold.setValue)
@@ -69,6 +69,12 @@ class ImageModeWindow(object):
         # disable
         self.setImageWidgetEnable(False)
 
+        # init tab and install image mode callback for image translator
+        self.tab_changed()
+
+    """
+        There only one image translator instance, so we must install the current callback when mode is changed.
+    """
     def tab_changed(self):
         index = self.main_ui.tabWidget.currentIndex()
         tab_name = self.main_ui.tabWidget.tabText(index)

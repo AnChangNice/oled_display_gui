@@ -104,7 +104,7 @@ class ImageTranslate(object):
         self.output_image_height = self.output_image_height_temp
 
     def input_image(self, image):
-        self.input_queue.put(image, timeout=0.05)
+        self.input_queue.put(image, timeout=0.1)
 
     def output_clean(self):
         while self.output_queue.qsize() > 0:
@@ -142,17 +142,16 @@ class ImageTranslate(object):
         self.output_images.bytes = image_out_bw_bytes
 
     def output_images_to_queue(self):
-        self.output_queue.put(self.output_images, timeout=0.05)
+        self.output_queue.put(self.output_images, timeout=0.1)
 
     def process_threading(self):
         while self.thread_run:
             try:
-                image = self.input_queue.get(timeout=0.05)
+                image = self.input_queue.get(timeout=0.1)
                 self.update_parameters()
                 self.image_translate(image)
                 self.output_images_to_queue()
                 if self.complete_callback != None:
                     self.complete_callback(self.output_queue)
-
             except:
                 pass

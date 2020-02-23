@@ -20,7 +20,8 @@ class SerialPort(object):
 
     def open(self, port, baudrate):
         try:
-            self.serial = serial.Serial(port, baudrate, write_timeout=0)
+            # self.serial = serial.Serial(port, baudrate, write_timeout=0)
+            self.serial = serial.Serial(port, baudrate)
         except Exception:
             print("Serial Port '%s' Open False！" % (port))
 

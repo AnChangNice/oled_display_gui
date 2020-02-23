@@ -7,6 +7,7 @@ from UI.screenSampleWindow import Ui_Form_screenSampleWindow
 from screen import ScreenDraw, ScreenGet
 from image_processing.Qt2CV import QPixmap2OpenCVImage
 
+
 class ScreenSampleWindow(QWidget):
 
     def __init__(self):
