@@ -1,6 +1,7 @@
 import serial
 import serial.tools.list_ports
 
+
 class SerialPort(object):
 
     def __init__(self, port, baudrate):
@@ -19,7 +20,8 @@ class SerialPort(object):
 
     def open(self, port, baudrate):
         try:
-            self.serial = serial.Serial(port, baudrate, write_timeout=0)
+            # self.serial = serial.Serial(port, baudrate, write_timeout=0)
+            self.serial = serial.Serial(port, baudrate)
         except Exception:
             print("Serial Port '%s' Open False！" % (port))
 
@@ -29,6 +31,7 @@ class SerialPort(object):
 
     def send(self, data):
         self.serial.write(data)
+
 
 if __name__ == '__main__':
     portList = SerialPort.getDeviceList()
