@@ -20,6 +20,67 @@ class OutputImagesStructure(object):
         self.bytes = None
 
 
+bayer4 = np.array(
+   [[0, 12,  3, 15],
+    [8,  4, 11,  7],
+    [2, 14,  1, 13],
+    [10, 6,  9,  5]], dtype='uint8')
+
+bayer8 = np.array(
+    [[ 0, 32,  8, 40,  2, 34, 10, 42],
+     [48, 16, 56, 24, 50, 18, 58, 26],
+     [12, 44,  4, 36, 14, 46,  6, 38],
+     [60, 28, 52, 20, 62, 30, 54, 22],
+     [ 3, 35, 11, 43,  1, 33,  9, 41],
+     [51, 19, 59, 27, 49, 17, 57, 25],
+     [15, 47,  7, 39, 13, 45,  5, 37],
+     [63, 31, 55, 23, 61, 29, 53, 21]], dtype='uint8'
+)
+
+bayer16 = np.array(
+    [[  0, 128,  32, 160,   8, 136,  40, 168,   2, 130,  34, 162,  10, 138,  42, 170],
+     [192,  64, 224,  96, 200,  72, 232, 104, 194,  66, 226,  98, 202,  74, 234, 106],
+     [ 48, 176,  16, 144,  56, 184,  24, 152,  50, 178,  18, 146,  58, 186,  26, 154],
+     [240, 112, 208,  80, 248, 120, 216,  88, 242, 114, 210,  82, 250, 122, 218,  90],
+     [ 12, 140,  44, 172,   4, 132,  36, 164,  14, 142,  46, 174,   6, 134,  38, 166],
+     [204,  76, 236, 108, 196,  68, 228, 100, 206,  78, 238, 110, 198,  70, 230, 102],
+     [ 60, 188,  28, 156,  52, 180,  20, 148,  62, 190,  30, 158,  54, 182,  22, 150],
+     [252, 124, 220,  92, 244, 116, 212,  84, 254, 126, 222,  94, 246, 118, 214,  86],
+     [  3, 131,  35, 163,  11, 139,  43, 171,   1, 129,  33, 161,   9, 137,  41, 169],
+     [195,  67, 227,  99, 203,  75, 235, 107, 193,  65, 225,  97, 201,  73, 233, 105],
+     [ 51, 179,  19, 147,  59, 187,  27, 155,  49, 177,  17, 145,  57, 185,  25, 153],
+     [243, 115, 211,  83, 251, 123, 219,  91, 241, 113, 209,  81, 249, 121, 217,  89],
+     [ 15, 143,  47, 175,   7, 135,  39, 167,  13, 141,  45, 173,   5, 133,  37, 165],
+     [207,  79, 239, 111, 199,  71, 231, 103, 205,  77, 237, 109, 197,  69, 229, 101],
+     [ 63, 191,  31, 159,  55, 183,  23, 151,  61, 189,  29, 157,  53, 181,  21, 149],
+     [255, 127, 223,  95, 247, 119, 215,  87, 253, 125, 221,  93, 245, 117, 213,  85]], dtype='uint8'
+)
+
+
+def dither(gray_image, bayer_size):
+
+    h, w = gray_image.shape
+    gray_image = gray_image // (256 // (bayer_size ** 2))
+
+    if bayer_size == 4:
+        bayer = bayer4
+    elif bayer_size == 8:
+        bayer = bayer8
+    elif bayer_size == 16:
+        bayer = bayer16
+    else:
+        return None
+
+    for x in range(h):
+        for y in range(w):
+            if gray_image[x, y] > bayer[x % bayer_size, y % bayer_size]:
+                gray_image[x, y] = 255
+            else:
+                gray_image[x, y] = 0
+
+    return gray_image
+
+
 @Singleton
 class ImageTranslate(object):
 
@@ -55,6 +116,11 @@ class ImageTranslate(object):
         self.bw_invert = False
         self.bw_invert_temp = False
 
+        self.dither_size = 0
+        self.dither_size_temp = 0
+        self.dither_enabled = False
+        self.dither_enabled_temp = False
+
     def start(self):
         if self.thread_run:
             return None
@@ -68,6 +134,16 @@ class ImageTranslate(object):
     def set_threshold(self, value):
         if value != 0:
             self.bw_threshold_temp = value
+
+        self.update_setting = True
+
+    def set_dither_size(self, size):
+        self.dither_size_temp = size
+
+        self.update_setting = True
+
+    def set_dither_enable(self, enable):
+        self.dither_enabled_temp = enable
 
         self.update_setting = True
 
@@ -96,6 +172,9 @@ class ImageTranslate(object):
 
         self.bw_threshold = self.bw_threshold_temp
         self.bw_invert = self.bw_invert_temp
+
+        self.dither_size = self.dither_size_temp
+        self.dither_enabled = self.dither_enabled_temp
 
         self.preview_image_width = self.preview_image_width_temp
         self.preview_image_height = self.preview_image_height_temp
@@ -131,7 +210,14 @@ class ImageTranslate(object):
         else:
             image_bw = (image_gray <= self.bw_threshold) * np.uint8(255)
         image_out_bw2x = cv.resize(image_bw, (2 * self.output_image_width, 2 * self.output_image_height))
-        image_out_bw = cv.resize(image_bw, (self.output_image_width, self.output_image_height))
+
+        if self.dither_enabled:
+            image_gray_1x = cv.resize(image_gray, (self.output_image_width, self.output_image_height))
+            image_gray_1x = cv.equalizeHist(image_gray_1x)
+            image_out_bw = dither(image_gray_1x, self.dither_size)
+        else:
+            image_out_bw = cv.resize(image_bw, (self.output_image_width, self.output_image_height))
+
         image_out_bw_bytes = self.image_to_bw.convert(image_out_bw)
 
         self.output_images.raw = image_raw

@@ -246,6 +246,54 @@
       </widget>
      </item>
      <item>
+      <widget class="QGroupBox" name="groupBox_18">
+       <property name="title">
+        <string>Binarization</string>
+       </property>
+       <layout class="QFormLayout" name="formLayout_7">
+        <item row="0" column="0">
+         <widget class="QRadioButton" name="radioButton_binarizationThreshold">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>Threshold</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QRadioButton" name="radioButton_binarizationDither">
+          <property name="text">
+           <string>Dither</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="comboBox_ditherBayerSize">
+          <item>
+           <property name="text">
+            <string>4M</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>8M</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16M</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>

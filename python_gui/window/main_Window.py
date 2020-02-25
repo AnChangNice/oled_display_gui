@@ -49,6 +49,11 @@ class MainWindow(object):
         self.main_ui.comboBox_displayByteDirection.activated.connect(self.displayByteDirectionSetting)
         self.main_ui.comboBox_displaySignBit.activated.connect(self.displaySignBitSetting)
         self.displaySettingInit()
+        # connect binarization setting
+        self.main_ui.radioButton_binarizationThreshold.clicked.connect(self.binarizationSetting)
+        self.main_ui.radioButton_binarizationDither.clicked.connect(self.binarizationSetting)
+        self.main_ui.comboBox_ditherBayerSize.activated.connect(self.binarizationSetting)
+        self.binarizationSetting()
 
     def portScan(self):
         portList = SerialPort.getDeviceList()
@@ -80,6 +85,15 @@ class MainWindow(object):
                 self.imageModeWindow.addSendMethod(None)
             except Exception:
                 print('Serial port close false.')
+
+    def binarizationSetting(self):
+        if self.main_ui.radioButton_binarizationThreshold.isChecked():
+            self.image_translator.set_dither_enable(False)
+        else:
+            self.image_translator.set_dither_enable(True)
+            size_str = self.main_ui.comboBox_ditherBayerSize.currentText()
+            size = int(size_str[:-1])
+            self.image_translator.set_dither_size(size)
 
     def displaySettingInit(self):
         self.displayColumnRowSetting()
