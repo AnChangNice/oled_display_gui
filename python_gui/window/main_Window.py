@@ -52,6 +52,8 @@ class MainWindow(object):
         # connect binarization setting
         self.main_ui.radioButton_binarizationThreshold.clicked.connect(self.binarizationSetting)
         self.main_ui.radioButton_binarizationDither.clicked.connect(self.binarizationSetting)
+        self.main_ui.radioButton_binarizationErrorDiffusion.clicked.connect(self.binarizationSetting)
+        self.main_ui.checkBox_binarizationEqualizeHist.clicked.connect(self.binarizationSetting)
         self.main_ui.comboBox_ditherBayerSize.activated.connect(self.binarizationSetting)
         self.binarizationSetting()
 
@@ -87,13 +89,22 @@ class MainWindow(object):
                 print('Serial port close false.')
 
     def binarizationSetting(self):
-        if self.main_ui.radioButton_binarizationThreshold.isChecked():
-            self.image_translator.set_dither_enable(False)
+        if self.main_ui.checkBox_binarizationEqualizeHist.isChecked():
+            self.image_translator.set_equalizrHist(True)
         else:
-            self.image_translator.set_dither_enable(True)
+            self.image_translator.set_equalizrHist(False)
+
+        if self.main_ui.radioButton_binarizationThreshold.isChecked():
+            self.image_translator.set_binarization_mode('threshold')
+        elif self.main_ui.radioButton_binarizationDither.isChecked():
+            self.image_translator.set_binarization_mode('dithering')
             size_str = self.main_ui.comboBox_ditherBayerSize.currentText()
             size = int(size_str[:-1])
             self.image_translator.set_dither_size(size)
+        elif self.main_ui.radioButton_binarizationErrorDiffusion.isChecked():
+            self.image_translator.set_binarization_mode('error_diff')
+        else:
+            pass
 
     def displaySettingInit(self):
         self.displayColumnRowSetting()
