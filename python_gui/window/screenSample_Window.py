@@ -29,6 +29,7 @@ class ScreenSampleWindow(QWidget):
 
         # screen shot
         self.screenShot = ScreenGet()
+        self.screenShot.start()
 
         self.show()
 
@@ -56,9 +57,6 @@ class ScreenSampleWindow(QWidget):
                 if self.mouse_button_pressed:
                     self.mouse_button_pressed = False
                     event.accept()
-
-    def window_follow_mouse(self):
-        pass
 
     def mouseMoveEvent(self, event):
         if self.mouse_button_pressed:

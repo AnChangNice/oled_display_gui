@@ -9,6 +9,7 @@ from image_processing.Qt2CV import OpenCVImage2QPixMap
 from UI.image_export_ui import Ui_imageExportWindow
 from image_processing.image_translate import ImageTranslate, OutputImagesStructure
 
+
 class ImageModeWindow(object):
 
     def __init__(self, window, main_ui):
