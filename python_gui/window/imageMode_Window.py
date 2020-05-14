@@ -9,6 +9,8 @@ from image_processing.Qt2CV import OpenCVImage2QPixMap
 from UI.image_export_ui import Ui_imageExportWindow
 from image_processing.image_translate import ImageTranslate, OutputImagesStructure
 
+import threading
+
 
 class ImageModeWindow(object):
 
@@ -29,6 +31,8 @@ class ImageModeWindow(object):
         self.init_signal()
 
         self.sendMethod = None
+
+        self.lock = threading.Lock()
 
     def init_export_window(self, window):
         self.imageExport_ui = Ui_imageExportWindow()
@@ -119,9 +123,11 @@ class ImageModeWindow(object):
             self.imageSendMode = 'Auto'
 
     def BWThresholdValueUpdate(self):
-        thresholdValue = self.main_ui.spinBox_BWThreshold.value()
-        self.image_translator.set_threshold(thresholdValue)
-        self.image_translator.input_image(self.image_raw)
+        if self.lock.acquire(blocking=True, timeout=0.1):
+            thresholdValue = self.main_ui.spinBox_BWThreshold.value()
+            self.image_translator.set_threshold(thresholdValue)
+            self.image_translator.input_image(self.image_raw)
+            self.lock.release()
 
     def previewBWSizeUpdate(self):
         if self.main_ui.checkBox_previewBW2x.isChecked():

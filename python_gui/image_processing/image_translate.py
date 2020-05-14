@@ -6,8 +6,6 @@ import numpy as np
 from image_processing.BWImageToBytes import BWImageToBytes
 from common.Singleton import Singleton
 
-import time
-
 from ctypes import CDLL, c_uint8, c_int
 
 class OutputImagesStructure(object):
@@ -21,7 +19,6 @@ class OutputImagesStructure(object):
         self.output_bw2x = None
         # output bw image bytes
         self.bytes = None
-
 
 # bayer4 = np.array(
 #    [[0, 12,  3, 15],
@@ -90,17 +87,16 @@ class ImageTranslate(object):
     def __init__(self):
         self.thread = threading.Thread(target=self.process_threading)
         self.thread_run = False
+        self.lock = threading.Lock()
 
-        self.input_queue = queue.Queue()
-        self.output_queue = queue.Queue()
+        self.input_queue = queue.Queue(10)
+        self.output_queue = queue.Queue(10)
 
         self.output_images = OutputImagesStructure()
 
         self.complete_callback = None
 
         self.image_to_bw = BWImageToBytes()
-
-        self.update_setting = False
 
         self.preview_image_width = 128
         self.preview_image_height = 64
@@ -161,62 +157,68 @@ class ImageTranslate(object):
         self.error_diffusion.restype = c_int
 
     def set_threshold(self, value):
-        if value != 0:
-            self.bw_threshold_temp = value
+        if self.lock.acquire(blocking=True, timeout=0.1):
+            if value != 0:
+                self.bw_threshold_temp = value
 
-        self.update_setting = True
+            self.lock.release()
 
     def set_dither_size(self, size):
-        self.dither_size_temp = size
+        if self.lock.acquire(blocking=True, timeout=0.1):
+            self.dither_size_temp = size
 
-        self.update_setting = True
+            self.lock.release()
 
     def set_binarization_mode(self, mode):
-        self.binarization_mode_temp = mode
+        if self.lock.acquire(blocking=True, timeout=0.1):
+            self.binarization_mode_temp = mode
 
-        self.update_setting = True
+            self.lock.release()
 
     def set_invert(self, enable):
-        if type(enable) == bool:
-            self.bw_invert_temp = enable
+        if self.lock.acquire(blocking=True, timeout=0.1):
+            if type(enable) == bool:
+                self.bw_invert_temp = enable
 
-        self.update_setting = True
+            self.lock.release()
 
     def set_equalizrHist(self, enable):
-        if type(enable) == bool:
-            self.binarization_equalizeHist_temp = enable
+        if self.lock.acquire(blocking=True, timeout=0.1):
+            if type(enable) == bool:
+                self.binarization_equalizeHist_temp = enable
 
-        self.update_setting = True
+            self.lock.release()
 
     def set_preview_size(self, width, height):
-        self.preview_image_width_temp = width
-        self.preview_image_height_temp = height
+        if self.lock.acquire(blocking=True, timeout=0.1):
+            self.preview_image_width_temp = width
+            self.preview_image_height_temp = height
 
-        self.update_setting = True
+            self.lock.release()
 
     def set_output_size(self, width, height):
-        self.output_image_width_temp = width
-        self.output_image_height_temp = height
+        if self.lock.acquire(blocking=True, timeout=0.1):
+            self.output_image_width_temp = width
+            self.output_image_height_temp = height
 
-        self.update_setting = True
+            self.lock.release()
 
     def update_parameters(self):
-        if not self.update_setting:
-            return None
-        self.update_setting = False
+        if self.lock.acquire(blocking=True, timeout=0.1):
+            self.bw_threshold = self.bw_threshold_temp
+            self.bw_invert = self.bw_invert_temp
 
-        self.bw_threshold = self.bw_threshold_temp
-        self.bw_invert = self.bw_invert_temp
+            self.dither_size = self.dither_size_temp
+            self.binarization_mode = self.binarization_mode_temp
+            self.binarization_equalizeHist = self.binarization_equalizeHist_temp
 
-        self.dither_size = self.dither_size_temp
-        self.binarization_mode = self.binarization_mode_temp
-        self.binarization_equalizeHist = self.binarization_equalizeHist_temp
+            self.preview_image_width = self.preview_image_width_temp
+            self.preview_image_height = self.preview_image_height_temp
 
-        self.preview_image_width = self.preview_image_width_temp
-        self.preview_image_height = self.preview_image_height_temp
+            self.output_image_width = self.output_image_width_temp
+            self.output_image_height = self.output_image_height_temp
 
-        self.output_image_width = self.output_image_width_temp
-        self.output_image_height = self.output_image_height_temp
+            self.lock.release()
 
     def input_image(self, image):
         self.input_queue.put(image, timeout=0.1)
