@@ -1,3 +1,21 @@
+# Demo
+## Image Mode
+ - GUI
+ 
+<img src="./Doc/image_demo.jpg" width = "960" height = "480" alt="" align=center />
+    
+ - OLED 128\*64
+ 
+<img src="./Doc/OLED_demo.jpg" width = "480" height = "320" alt="" align=center />
+    
+ - TFT 320\*240
+ 
+<img src="./Doc/320_240_demo.jpg" width = "480" height = "320" alt="" align=center />
+    
+## Video Mode & Screen Mode
+
+ Please watch the [demo video](https://www.bilibili.com/video/BV1v7411A7sF/ "OLED GUI Demo | 上位机工具"). 
+ 
 # Hardware:
 - STM32F103CET6 Blue Pill
 - OLED_12864_SSD1306 with IIC interface, or you could port to other screen interfaces.
