@@ -15,7 +15,12 @@
 ## Video Mode & Screen Mode
 
  Please watch the [demo video](https://www.bilibili.com/video/BV1v7411A7sF/ "OLED GUI Demo | 上位机工具"). 
- 
+
+# How it works
+
+ Please referance to [this article](https://zhuanlan.zhihu.com/p/113066072 "OLED ToolBox, bad apple上位机 - Chang An的文章 - 知乎
+").
+
 # Hardware:
 - STM32F103CET6 Blue Pill
 - OLED_12864_SSD1306 with IIC interface, or you could port to other screen interfaces.
