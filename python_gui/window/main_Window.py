@@ -62,6 +62,9 @@ class MainWindow(object):
         self.main_ui.combox_serialPortList.clear()
         for portInfo, port in portList:
             self.main_ui.combox_serialPortList.addItem(portInfo, port)
+        # default select the first one
+        self.port = self.main_ui.combox_serialPortList.currentData()
+        self.baudrate = self.main_ui.spinBox_baudrate.value()
 
     def portSelect(self):
         self.port = self.main_ui.combox_serialPortList.currentData()
